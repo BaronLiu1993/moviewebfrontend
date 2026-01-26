@@ -40,7 +40,6 @@ const FeedCard = ({
 
   return (
     <div className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden max-w-lg mx-auto">
-      {/* Header */}
       <div className="px-4 py-3 flex items-center gap-3">
         <div className="w-10 h-10 bg-gray-300 rounded-full flex-shrink-0"></div>
         <div>
@@ -49,7 +48,6 @@ const FeedCard = ({
         </div>
       </div>
 
-      {/* Scene Image */}
       <div className="w-full h-80 bg-gray-200 relative overflow-hidden">
         {sceneImage ? (
           <Image
@@ -65,7 +63,6 @@ const FeedCard = ({
         )}
       </div>
 
-      {/* Content */}
       <div className="px-4 py-3">
         <h3 className="font-medium text-sm mb-2">{movieTitle}</h3>
         <p className="text-sm text-gray-700 mb-3">{userNote}</p>

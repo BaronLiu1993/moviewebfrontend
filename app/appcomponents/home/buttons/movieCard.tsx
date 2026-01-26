@@ -2,14 +2,12 @@
 
 import { Badge } from "@/components/ui/badge";
 import {
-  Book,
   Bookmark,
   ChevronDown,
   Heart,
   Pencil,
   Star,
   Tag,
-  Users,
 } from "lucide-react";
 import Image from "next/image";
 import { useState } from "react";
@@ -152,12 +150,12 @@ const MovieCard = ({ imageUrl, title, tags, overview }: MovieCardProps) => {
         </div>
         <div className="p-2">
           <div className = "flex gap-2 items-center">
-            <h2 className="font-medium line-clamp-2">{title}</h2>
+            <h2 className="font-medium">{title}</h2>
             <button>
               <Bookmark className="w-5 h-5 stroke-1 float-right mt-1 cursor-pointer" />
             </button>
           </div>
-          <h3 className="text-xs text-neutral-600">
+          <h3 className="text-xs text-neutral-500 flex items-center">
             {overview.slice(0, 40)}...
           </h3>
           <div className="p-1 flex gap-1 flex-wrap">

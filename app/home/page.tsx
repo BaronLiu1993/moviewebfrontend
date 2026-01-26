@@ -1,6 +1,7 @@
 import { Badge } from "@/components/ui/badge";
-import MovieCard from "../appcomponents/home/movieCard";
-import WatchCard from "../appcomponents/home/watchCard";
+import MovieCard from "../appcomponents/home/cards/movieCard";
+import WatchCard from "../appcomponents/home/cards/watchCard";
+import { Plus } from "lucide-react";
 
 interface TMDBMovie {
   id: number;
@@ -31,15 +32,23 @@ const Home = async (props: {
   }>;
 }) => {
   const searchParamsData = await props.searchParams;
-  const { genres = "18, 10749", countries = "KR", fromYear = "20202", toYear = "2022" } = searchParamsData;
+  const {
+    genres = "18, 10749",
+    countries = "KR",
+    fromYear = "20202",
+    toYear = "2022",
+  } = searchParamsData;
 
   const [GenreData]: [GenreDataType] = await Promise.all([
-    fetch(`http://localhost:8000/v1/api/query/keyword-search?genres=${genres}&countries=${countries}&fromYear=${fromYear}&toYear=${toYear}`, {
-      cache: "no-store",
-    }).then((res) => res.json()),
+    fetch(
+      `http://localhost:8000/v1/api/query/keyword-search?genres=${genres}&countries=${countries}&fromYear=${fromYear}&toYear=${toYear}`,
+      {
+        cache: "no-store",
+      },
+    ).then((res) => res.json()),
   ]);
 
-  console.log(GenreData)
+  console.log(GenreData);
 
   const mockPlaylists: PlaylistItem[] = [
     {
@@ -67,8 +76,10 @@ const Home = async (props: {
   return (
     <div className="font-figtree flex flex-col gap-10 pb-6">
       <div>
-        <div className = "px-6 py-2">
-          <h1 className="font-medium text-xl">New Favourites For Light Hearted Korean Dramas</h1>
+        <div className="px-6 py-2">
+          <h1 className="font-medium text-xl">
+            New Favourites For Light Hearted Korean Dramas
+          </h1>
         </div>
         <div className="flex px-6 overflow-x-scroll space-x-4">
           {GenreData.data.results.map((movie, idx) => (
@@ -84,9 +95,25 @@ const Home = async (props: {
           ))}
         </div>
       </div>
+
+
+      
       <div>
-        <div className="px-6 py-2">
+
+      </div>
+
+
+
+
+      <div>
+        <div className="px-6 py-2 flex flex-col gap-1">
           <h1 className="font-medium text-xl">Watch lists</h1>
+          <button className="flex items-center font-medium text-sm gap-2">
+            <Badge className="bg-neutral-300 text-black">
+              <Plus className="w-4 h-4" />
+              Create Watch list
+            </Badge>
+          </button>
         </div>
         <div className="flex px-6 overflow-x-scroll space-x-4">
           {mockPlaylists.map((playlist) => (
@@ -96,6 +123,7 @@ const Home = async (props: {
           ))}
         </div>
       </div>
+      
     </div>
   );
 };
