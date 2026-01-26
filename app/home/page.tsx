@@ -1,4 +1,6 @@
+import { Badge } from "@/components/ui/badge";
 import MovieCard from "../appcomponents/home/movieCard";
+import WatchCard from "../appcomponents/home/watchCard";
 
 interface TMDBMovie {
   id: number;
@@ -6,6 +8,12 @@ interface TMDBMovie {
   poster_path: string;
   genre_ids: number[];
   overview: string;
+}
+
+interface PlaylistItem {
+  id: number;
+  name: string;
+  description: string;
 }
 
 interface GenreDataType {
@@ -33,12 +41,34 @@ const Home = async (props: {
 
   console.log(GenreData)
 
+  const mockPlaylists: PlaylistItem[] = [
+    {
+      id: 1,
+      name: "Weekend Binge Watch",
+      description: "Perfect dramas for a cozy weekend",
+    },
+    {
+      id: 2,
+      name: "Feel-Good Romances",
+      description: "Light-hearted love stories to brighten your day",
+    },
+    {
+      id: 3,
+      name: "Emotional Roller Coasters",
+      description: "Intense dramas with plot twists",
+    },
+    {
+      id: 4,
+      name: "Hidden Gems",
+      description: "Underrated Korean dramas worth watching",
+    },
+  ];
+
   return (
     <div className="font-figtree flex flex-col gap-10 pb-6">
-      <div className="p-6">
+      <div>
         <div className = "px-6 py-2">
           <h1 className="font-medium text-xl">New Favourites For Light Hearted Korean Dramas</h1>
-        <div></div>
         </div>
         <div className="flex px-6 overflow-x-scroll space-x-4">
           {GenreData.data.results.map((movie, idx) => (
@@ -54,8 +84,18 @@ const Home = async (props: {
           ))}
         </div>
       </div>
-      
-      
+      <div>
+        <div className="px-6 py-2">
+          <h1 className="font-medium text-xl">Watch lists</h1>
+        </div>
+        <div className="flex px-6 overflow-x-scroll space-x-4">
+          {mockPlaylists.map((playlist) => (
+            <div key={playlist.id}>
+              <WatchCard playlist={playlist} />
+            </div>
+          ))}
+        </div>
+      </div>
     </div>
   );
 };
