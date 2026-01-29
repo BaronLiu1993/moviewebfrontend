@@ -29,6 +29,33 @@ interface MovieCardProps {
   overview: string;
 }
 
+// TMDB Genre ID mapping
+const GENRE_MAP: Record<number, string> = {
+  28: "Action",
+  12: "Adventure",
+  16: "Animation",
+  35: "Comedy",
+  80: "Crime",
+  99: "Documentary",
+  18: "Drama",
+  10751: "Family",
+  14: "Fantasy",
+  36: "History",
+  27: "Horror",
+  10402: "Music",
+  9648: "Mystery",
+  10749: "Romance",
+  878: "Science Fiction",
+  10770: "TV Movie",
+  53: "Thriller",
+  10752: "War",
+  37: "Western",
+};
+
+const getGenreName = (genreId: number): string => {
+  return GENRE_MAP[genreId] || `Genre ${genreId}`;
+};
+
 const MovieCard = ({ imageUrl, title, tags, overview }: MovieCardProps) => {
   const [rating, setRating] = useState<string | null>(null);
 
@@ -84,7 +111,7 @@ const MovieCard = ({ imageUrl, title, tags, overview }: MovieCardProps) => {
                   </div>
                   <div className="p-1 flex gap-1 flex-wrap">
                     {tags.map((tag, idx) => (
-                      <Badge key={idx}>{tag}</Badge>
+                      <Badge key={idx}>{getGenreName(tag)}</Badge>
                     ))}
                   </div>
                 </DialogHeader>
@@ -141,7 +168,7 @@ const MovieCard = ({ imageUrl, title, tags, overview }: MovieCardProps) => {
                 </div>
                 <DialogFooter>
                   <DialogClose asChild>
-                    <button>Cancel</button>
+                    <button>Share with Friends</button>
                   </DialogClose>
                 </DialogFooter>
               </DialogContent>
@@ -160,7 +187,7 @@ const MovieCard = ({ imageUrl, title, tags, overview }: MovieCardProps) => {
           </h3>
           <div className="p-1 flex gap-1 flex-wrap">
             {tags.map((tag, idx) => (
-              <Badge key={idx}>{tag}</Badge>
+              <Badge key={idx}>{getGenreName(tag)}</Badge>
             ))}
           </div>
         </div>

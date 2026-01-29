@@ -12,10 +12,22 @@ interface TMDBMovie {
   overview: string;
 }
 
-interface PlaylistItem {
+interface TMDBMovieAiring {
   id: number;
   name: string;
-  description: string;
+  poster_path: string;
+  genre_ids: number[];
+  overview: string;
+  popularity: number;
+}
+
+interface TMDBMoviePopular {
+  id: number;
+  name: string;
+  poster_path: string;
+  genre_ids: number[];
+  overview: string;
+  popularity: number;
 }
 
 interface GenreDataType {
@@ -24,15 +36,16 @@ interface GenreDataType {
   };
 }
 
-interface FeedCardProps {
-  id: number;
-  movieTitle: string;
-  sceneImage: string;
-  userNote: string;
-  initialLikes: number;
-  initialComments: number;
-  userName: string;
-  userAvatar?: string;
+interface AiringDataType {
+  data: {
+    results: TMDBMovieAiring[];
+  };
+}
+
+interface PopularDataType {
+  data: {
+    results: TMDBMoviePopular[];
+  };
 }
 
 const Home = async (props: {
@@ -51,132 +64,95 @@ const Home = async (props: {
     toYear = "2022",
   } = searchParamsData;
 
-  const [GenreData]: [GenreDataType] = await Promise.all([
+  const [GenreData, AiringData, PopularData]: [GenreDataType, AiringDataType, PopularDataType] = await Promise.all([
     fetch(
       `http://localhost:8000/v1/api/query/keyword-search?genres=${genres}&countries=${countries}&fromYear=${fromYear}&toYear=${toYear}`,
       {
         cache: "no-store",
       },
     ).then((res) => res.json()),
+    fetch(
+      `http://localhost:8000/v1/api/query/korean/airing`,
+      {
+        cache: "no-store",
+      },
+    ).then((res) => res.json()),
+    fetch(
+      `http://localhost:8000/v1/api/query/korean/popular`,
+      {
+        cache: "no-store",
+      },
+    ).then((res) => res.json()),
   ]);
 
-  console.log(GenreData);
+  const sortedAiringData = [...AiringData.data.results].sort(
+    (a, b) => b.popularity - a.popularity
+  );
 
-  const mockPlaylists: PlaylistItem[] = [
-    {
-      id: 1,
-      name: "Weekend Binge Watch",
-      description: "Perfect dramas for a cozy weekend",
-    },
-    {
-      id: 2,
-      name: "Feel-Good Romances",
-      description: "Light-hearted love stories to brighten your day",
-    },
-    {
-      id: 3,
-      name: "Emotional Roller Coasters",
-      description: "Intense dramas with plot twists",
-    },
-    {
-      id: 4,
-      name: "Hidden Gems",
-      description: "Underrated Korean dramas worth watching",
-    },
-  ];
+  const sortedPopularData = [...PopularData.data.results].sort(
+    (a, b) => b.popularity - a.popularity
+  );
 
-  const mockFeedData: FeedCardProps[] = [
-    {
-      id: 1,
-      movieTitle: "Crash Landing on You",
-      sceneImage:
-        "https://images.unsplash.com/photo-1524985069026-dd778a71c7b4",
-      userNote:
-        "This scene absolutely destroyed me 😭 The chemistry here is unreal.",
-      initialLikes: 128,
-      initialComments: 24,
-      userName: "Jisoo Kim",
-      userAvatar: "https://i.pravatar.cc/150?img=32",
-    },
-    {
-      id: 2,
-      movieTitle: "Reply 1988",
-      sceneImage:
-        "https://images.unsplash.com/photo-1502136969935-8d07106b9c63",
-      userNote:
-        "Felt like home. Every character in this show feels like family.",
-      initialLikes: 302,
-      initialComments: 57,
-      userName: "Minho Park",
-      userAvatar: "https://i.pravatar.cc/150?img=12",
-    },
-    {
-      id: 3,
-      movieTitle: "Business Proposal",
-      sceneImage:
-        "https://images.unsplash.com/photo-1497032628192-86f99bcd76bc",
-      userNote: "Pure rom-com fun. No thoughts, just vibes 💕",
-      initialLikes: 89,
-      initialComments: 11,
-      userName: "Soojin Lee",
-      userAvatar: "https://i.pravatar.cc/150?img=47",
-    },
-    {
-      id: 4,
-      movieTitle: "My Mister",
-      sceneImage:
-        "https://images.unsplash.com/photo-1497032628192-86f99bcd76bc",
-      userNote: "Heavy but beautiful. One of those shows that stays with you.",
-      initialLikes: 410,
-      initialComments: 76,
-      userName: "Daniel Cho",
-      userAvatar: "https://i.pravatar.cc/150?img=8",
-    },
-  ];
+
 
   return (
-    <div className="font-figtree flex flex-col gap-10 pb-6">
-      <div>
-        <div className="px-6 py-2">
-          <h1 className="font-medium text-xl">
-            New Favourites For Light Hearted Korean Dramas
-          </h1>
+    <div className="font-figtree flex flex-col pb-12 bg-white">
+      <div className="px-8 py-8 space-y-8">
+        <div className="space-y-6">
+          <div className="space-y-3">
+            <h1 className="font-bold text-2xl">
+              New Favourites For Light Hearted Korean Dramas
+            </h1>
+          </div>
+          <div className="flex overflow-x-scroll space-x-4">
+            {GenreData.data.results.map((movie, idx) => (
+                <MovieCard
+                  key={movie.id}
+                  imageUrl={movie.poster_path}
+                  title={movie.title}
+                  tags={movie.genre_ids}
+                  overview={movie.overview}
+                />
+            ))}
+          </div>
         </div>
-        <div className="flex px-6 overflow-x-scroll space-x-4">
-          {GenreData.data.results.map((movie, idx) => (
-              <MovieCard
-                key={movie.id}
-                imageUrl={movie.poster_path}
-                title={movie.title}
-                tags={movie.genre_ids}
-                overview={movie.overview}
-              />
-          ))}
-        </div>
-      </div>
 
-      <div className = "space-y-6">
-        {mockFeedData.map((item) => (
-          <FeedCard key={item.id} {...item} />
-        ))}
-      </div>
-
-      <div>
-        <div className="px-6 py-2 flex flex-col gap-1">
-          <h1 className="font-medium text-xl">Watch lists</h1>
-          <button className="flex items-center font-medium text-sm gap-2">
-            <Badge className="bg-neutral-300 text-black">
-              <Plus className="w-4 h-4" />
-              Create Watch list
-            </Badge>
-          </button>
+        <div className="space-y-6">
+          <div className="space-y-3">
+            <h1 className="font-bold text-2xl">
+              Trending Korean Dramas Airing
+            </h1>
+          </div>
+          <div className="flex overflow-x-scroll space-x-4">
+            {sortedAiringData.map((movie, idx) => (
+                <MovieCard
+                  key={movie.id}
+                  imageUrl={movie.poster_path}
+                  title={movie.name}
+                  tags={movie.genre_ids}
+                  overview={movie.overview}
+                />
+            ))}
+          </div>
         </div>
-        <div className="flex px-6 overflow-x-scroll space-x-4">
-          {mockPlaylists.map((playlist) => (
-            <div key={playlist.id}>
-              <WatchCard playlist={playlist} />
-            </div>
-          ))}
+
+        <div className="space-y-6">
+          <div className="space-y-3">
+            <h1 className="font-bold text-2xl">
+              Most Popular Korean Movies Right Now
+            </h1>
+          </div>
+          <div className="flex overflow-x-scroll space-x-4">
+            {sortedPopularData.map((movie, idx) => (
+                <MovieCard
+                  key={movie.id}
+                  imageUrl={movie.poster_path}
+                  title={movie.name}
+                  tags={movie.genre_ids}
+                  overview={movie.overview}
+                />
+            ))}
+          </div>
         </div>
       </div>
     </div>
