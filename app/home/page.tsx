@@ -1,160 +1,27 @@
-import { Badge } from "@/components/ui/badge";
-import MovieCard from "../appcomponents/home/cards/movieCard";
-import WatchCard from "../appcomponents/home/cards/watchCard";
-import FeedCard from "../appcomponents/home/cards/feedCard";
-import { Plus } from "lucide-react";
+import { cookies } from "next/headers";
+import HomeClient from "../appcomponents/home/homeClient";
 
-interface TMDBMovie {
-  id: number;
-  title: string;
-  poster_path: string;
-  genre_ids: number[];
-  overview: string;
-}
-
-interface TMDBMovieAiring {
-  id: number;
-  name: string;
-  poster_path: string;
-  genre_ids: number[];
-  overview: string;
-  popularity: number;
-}
-
-interface TMDBMoviePopular {
-  id: number;
-  name: string;
-  poster_path: string;
-  genre_ids: number[];
-  overview: string;
-  popularity: number;
-}
-
-interface GenreDataType {
-  data: {
-    results: TMDBMovie[];
-  };
-}
-
-interface AiringDataType {
-  data: {
-    results: TMDBMovieAiring[];
-  };
-}
-
-interface PopularDataType {
-  data: {
-    results: TMDBMoviePopular[];
-  };
-}
-
-const Home = async (props: {
-  searchParams: Promise<{
-    genres?: string;
-    countries?: string;
-    fromYear?: string;
-    toYear?: string;
-  }>;
-}) => {
-  const searchParamsData = await props.searchParams;
-  const {
-    genres = "18, 10749",
-    countries = "KR",
-    fromYear = "20202",
-    toYear = "2022",
-  } = searchParamsData;
-
-  const [GenreData, AiringData, PopularData]: [GenreDataType, AiringDataType, PopularDataType] = await Promise.all([
-    fetch(
-      `http://localhost:8000/v1/api/query/keyword-search?genres=${genres}&countries=${countries}&fromYear=${fromYear}&toYear=${toYear}`,
-      {
-        cache: "no-store",
+const Home = async () => {
+  const cookieStore = await cookies();
+  const token = cookieStore.get("token")?.value;
+  const response = await fetch(
+    "http://localhost:8000/v1/api/query/initial-feed",
+    {
+      method: "GET",
+      headers: {
+        Authorization: `Bearer eyJhbGciOiJFUzI1NiIsImtpZCI6ImJkZThjY2VjLWU0NzItNDA2Ny1iYzljLTUxZjE4MTIxYzNhNCIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJodHRwczovL3Byb2Njc3dwcGtzcWVnaXBwamVpLnN1cGFiYXNlLmNvL2F1dGgvdjEiLCJzdWIiOiJmNThmMmZlOC05OGM0LTRlMjAtOWNjZi1kOTBmMWEzYmRkYmQiLCJhdWQiOiJhdXRoZW50aWNhdGVkIiwiZXhwIjoxNzcyMjYxNzY3LCJpYXQiOjE3NzIyNTgxNjcsImVtYWlsIjoiYmFyb25saXUxOTkzQGdtYWlsLmNvbSIsInBob25lIjoiIiwiYXBwX21ldGFkYXRhIjp7InByb3ZpZGVyIjoiZW1haWwiLCJwcm92aWRlcnMiOlsiZW1haWwiXX0sInVzZXJfbWV0YWRhdGEiOnsiZW1haWwiOiJiYXJvbmxpdTE5OTNAZ21haWwuY29tIiwiZW1haWxfdmVyaWZpZWQiOnRydWUsImZ1bGxfbmFtZSI6IkJhcm9uIExpdSIsInBob25lX3ZlcmlmaWVkIjpmYWxzZSwic3ViIjoiZjU4ZjJmZTgtOThjNC00ZTIwLTljY2YtZDkwZjFhM2JkZGJkIn0sInJvbGUiOiJhdXRoZW50aWNhdGVkIiwiYWFsIjoiYWFsMSIsImFtciI6W3sibWV0aG9kIjoicGFzc3dvcmQiLCJ0aW1lc3RhbXAiOjE3NzIyNTgxNjd9XSwic2Vzc2lvbl9pZCI6IjU5NGY4YmUxLTM5M2EtNDU3Zi04OTAxLTA1MjEwYzJiNmUxMCIsImlzX2Fub255bW91cyI6ZmFsc2V9.Klxd0aYHxwlYJ5iMEKLHHA-U5Co6dd7KgpMvIOZZRAjwg0PVzFEgnrlUk47eQUEFbgUAYe2EFZDoiAMMB2adLQ`,
       },
-    ).then((res) => res.json()),
-    fetch(
-      `http://localhost:8000/v1/api/query/korean/airing`,
-      {
-        cache: "no-store",
-      },
-    ).then((res) => res.json()),
-    fetch(
-      `http://localhost:8000/v1/api/query/korean/popular`,
-      {
-        cache: "no-store",
-      },
-    ).then((res) => res.json()),
-  ]);
-
-  const sortedAiringData = [...AiringData.data.results].sort(
-    (a, b) => b.popularity - a.popularity
+    },
   );
-
-  const sortedPopularData = [...PopularData.data.results].sort(
-    (a, b) => b.popularity - a.popularity
+  const feed = await response.json();
+  const initialFeed = feed.data;
+  const filteredFeed = initialFeed.filter(
+    (item: any) => item.photo_url && item.photo_url.length > 0,
   );
-
-
 
   return (
-    <div className="font-figtree flex flex-col pb-12 bg-white">
-      <div className="px-8 py-8 space-y-8">
-        <div className="space-y-6">
-          <div className="space-y-3">
-            <h1 className="font-bold text-2xl">
-              New Favourites For Light Hearted Korean Dramas
-            </h1>
-          </div>
-          <div className="flex overflow-x-scroll space-x-4">
-            {GenreData.data.results.map((movie, idx) => (
-                <MovieCard
-                  key={movie.id}
-                  imageUrl={movie.poster_path}
-                  title={movie.title}
-                  tags={movie.genre_ids}
-                  overview={movie.overview}
-                />
-            ))}
-          </div>
-        </div>
-
-        <div className="space-y-6">
-          <div className="space-y-3">
-            <h1 className="font-bold text-2xl">
-              Trending Korean Dramas Airing
-            </h1>
-          </div>
-          <div className="flex overflow-x-scroll space-x-4">
-            {sortedAiringData.map((movie, idx) => (
-                <MovieCard
-                  key={movie.id}
-                  imageUrl={movie.poster_path}
-                  title={movie.name}
-                  tags={movie.genre_ids}
-                  overview={movie.overview}
-                />
-            ))}
-          </div>
-        </div>
-
-        <div className="space-y-6">
-          <div className="space-y-3">
-            <h1 className="font-bold text-2xl">
-              Most Popular Korean Movies Right Now
-            </h1>
-          </div>
-          <div className="flex overflow-x-scroll space-x-4">
-            {sortedPopularData.map((movie, idx) => (
-                <MovieCard
-                  key={movie.id}
-                  imageUrl={movie.poster_path}
-                  title={movie.name}
-                  tags={movie.genre_ids}
-                  overview={movie.overview}
-                />
-            ))}
-          </div>
-        </div>
-      </div>
+    <div>
+      <HomeClient feed={filteredFeed} />
     </div>
   );
 };

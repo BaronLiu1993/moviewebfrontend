@@ -1,70 +1,59 @@
 "use client";
 
-import { Bookmark, Heart, MessageCircle, Share2 } from "lucide-react";
+import { Badge } from "@/components/ui/badge";
 import Image from "next/image";
-import { useState } from "react";
 
-interface FeedCardProps {
-  id: number;
-  movieTitle: string;
-  sceneImage: string;
-  userNote: string;
-  initialLikes: number;
-  initialComments: number;
-  userName: string;
-  userAvatar?: string;
-}
+type FeedItemProps = {
+  tmdb_id: number;
+  title: string;
+  genre_ids: number[];
+  release_year: number;
+  photo_url?: string;
+};
+
+const TV_GENRE_MAP: { [key: number]: string } = {
+  10759: "action adventure",
+  16: "animation",
+  35: "comedy",
+  80: "crime",
+  18: "drama",
+  10751: "family",
+  9648: "mystery",
+  10765: "scifi fantasy",
+};
 
 const FeedCard = ({
-  id,
-  movieTitle,
-  sceneImage,
-  userNote,
-  initialLikes,
-  initialComments,
-  userName,
-  userAvatar,
-}: FeedCardProps) => {
-  const [likes, setLikes] = useState(initialLikes);
-  const [isLiked, setIsLiked] = useState(false);
-  const [comments, setComments] = useState(initialComments);
-
-  const handleLike = () => {
-    if (isLiked) {
-      setLikes(likes - 1);
-    } else {
-      setLikes(likes + 1);
-    }
-    setIsLiked(!isLiked);
-  };
-
+  tmdb_id,
+  title,
+  genre_ids,
+  release_year,
+  photo_url,
+}: FeedItemProps) => {
   return (
-    <div className="bg-white rounded-lg overflow-hidden max-w-lg mx-auto">
-      <div className="px-4 py-3 flex items-center gap-3">
-        <div className="w-10 h-10 bg-gray-300 rounded-full flex-shrink-0"></div>
+    <div className="font-figtree hover:bg-gray-200 flex justify-center border-2 p-1 rounded-xl shadow-sm overflow-hidden">
+      <div className = "hover:bg-gray-200">
         <div>
-          <p className="font-medium text-md">{userName}</p>
-          <p className="text-sm text-gray-500">Watched {movieTitle}</p>
+          <Image
+            className="rounded-lg"
+            src={photo_url ?? "/placeholder.jpg"}
+            alt={title}
+            width={250}
+            height={375}
+          />
         </div>
-      </div>
+        <div className="m-2">
+          <h1 className="font-semibold text-lg leading-tight">{title}</h1>
+          <p className="text-md text-muted-foreground mt-1">{release_year}</p>
 
-      <div className="w-full h-80 bg-gray-200 relative overflow-hidden rounded-md">
-        
-      </div>
-
-      <div className="px-4 py-3">
-        <div className = "flex justify-between items-center mb-2">
-          <div className = "flex gap-2">
-            <Heart />
-          <MessageCircle />
+          <div className="flex flex-wrap gap-1 mt-2">
+            {genre_ids.map((id) => (
+              <Badge key={id} className="text-sm">
+                {TV_GENRE_MAP[id]}
+              </Badge>
+            ))}
           </div>
-          <Bookmark />
-
         </div>
-        <h3 className="font-medium text-sm mb-2">{movieTitle}</h3>
-        <p className="text-sm text-gray-700 mb-3">{userNote}</p>
-        
-      </div>      
+      </div>
     </div>
   );
 };

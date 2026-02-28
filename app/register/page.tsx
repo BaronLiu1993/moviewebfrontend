@@ -1,15 +1,9 @@
-"use client"
-
-import MovieInput from "../appcomponents/register/inputs/movieInput";
-
-const RegisterPage = () => {
+const Register = () => {
   return (
     <>
-        <div>
-            <MovieInput />
-        </div>
+
     </>
   );
 };
 
-export default RegisterPage;
+export default Register;

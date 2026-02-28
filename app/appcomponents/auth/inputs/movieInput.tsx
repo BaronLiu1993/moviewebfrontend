@@ -51,7 +51,6 @@ const MovieInput = () => {
       <div className = "p-8 font-figtree">
         <h1 className = "font-semibold text-2xl">What Are You Interested In?</h1>
         <h2>This will help us customise</h2>
-
         <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
           {genres.map((genre) => (
             <div key={genre} className="relative cursor-pointer" onClick={() => toggleGenre(genre)}>
