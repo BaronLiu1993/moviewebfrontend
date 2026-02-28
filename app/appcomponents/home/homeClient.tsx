@@ -25,11 +25,10 @@ const HomeClient: React.FC<HomeClientProps> = ({ feed }) => {
     <div>
     <SearchBar />
       <Masonry
-        columns={4}
-        spacing={2}
+        columns={3}
+        spacing={4}
         defaultHeight={900}
-        defaultColumns={5}
-        defaultSpacing={1}>
+        defaultSpacing={4}>
         {feed.map((item, idx) => (
           <div key={idx}>
             <FeedCard

@@ -1,7 +1,10 @@
 "use client";
 
 import { Badge } from "@/components/ui/badge";
+import { Bookmark, Check } from "lucide-react";
 import Image from "next/image";
+
+import React from "react";
 
 type FeedItemProps = {
   tmdb_id: number;
@@ -29,28 +32,54 @@ const FeedCard = ({
   release_year,
   photo_url,
 }: FeedItemProps) => {
+  const [isBookmarked, setIsBookmarked] = React.useState(false);
   return (
-    <div className="font-figtree hover:bg-gray-200 flex justify-center border-2 p-1 rounded-xl shadow-sm overflow-hidden">
-      <div className = "hover:bg-gray-200">
-        <div>
+    <div className="font-figtree cursor-pointer flex flex-col justify-center items-center rounded-xl overflow-hidden w-[250px] hover:bg-zinc-50 hover:scale-102 transition">
+      <div>
+        <div className="relative">
+          {isBookmarked ? (
+            <Badge
+              onClick={(e) => {
+                e.stopPropagation();
+                setIsBookmarked(false);
+              }}
+              className="absolute top-2 right-2 text-sm text-white bg-yellow-600 rounded-lg"
+            >
+              <Bookmark />
+              Bookmark
+            </Badge>
+          ) : (
+            <Badge
+              onClick={(e) => {
+                e.stopPropagation();
+                setIsBookmarked(true);
+              }}
+              className="absolute top-2 right-2 text-sm text-white bg-green-600 rounded-lg"
+            >
+              <Check />
+              Saved
+            </Badge>
+          )}
           <Image
-            className="rounded-lg"
+            className="rounded-t-xl object-cover rounded-lg"
             src={photo_url ?? "/placeholder.jpg"}
             alt={title}
             width={250}
             height={375}
           />
         </div>
-        <div className="m-2">
+        <div className="p-3 space-y-2">
           <h1 className="font-semibold text-lg leading-tight">{title}</h1>
-          <p className="text-md text-muted-foreground mt-1">{release_year}</p>
+          <p className="text-sm text-muted-foreground">{release_year}</p>
 
-          <div className="flex flex-wrap gap-1 mt-2">
-            {genre_ids.map((id) => (
-              <Badge key={id} className="text-sm">
-                {TV_GENRE_MAP[id]}
-              </Badge>
-            ))}
+          <div className="flex flex-wrap gap-1">
+            {genre_ids.map((id) =>
+              TV_GENRE_MAP[id] ? (
+                <Badge key={id} variant="secondary" className="text-xs">
+                  {TV_GENRE_MAP[id]}
+                </Badge>
+              ) : null,
+            )}
           </div>
         </div>
       </div>

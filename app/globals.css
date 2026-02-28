@@ -2,7 +2,6 @@
 @import "tw-animate-css";
 
 @custom-variant dark (&:is(.dark *));
-@custom-variant hover (&:hover);
 
 @theme inline {
   --color-background: var(--background);
