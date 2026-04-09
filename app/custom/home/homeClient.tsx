@@ -63,12 +63,13 @@ const HomeClient: React.FC<HomeClientProps> = ({ feed, list, token }) => {
         ))}
       </div>
       {activeTab === "feed" ? (
-        <FeedSection initialFeed={feed} token={token} />
+        <FeedSection initialFeed={feed} token={token} lists={list} />
       ) : (
         <WatchlistSection
           name={list.find((l) => l.list_id === activeTab)?.name ?? ""}
           listId={activeTab}
           token={token}
+          lists={list}
         />
       )}
     </div>

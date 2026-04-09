@@ -20,12 +20,18 @@ type Feed = {
   pageSize: number;
 };
 
+type ListItem = {
+  list_id: string;
+  name: string;
+};
+
 interface FeedSectionProps {
   initialFeed: Feed;
   token: string;
+  lists: ListItem[];
 }
 
-const FeedSection: React.FC<FeedSectionProps> = ({ initialFeed, token }) => {
+const FeedSection: React.FC<FeedSectionProps> = ({ initialFeed, token, lists }) => {
   const [items, setItems] = useState<FeedItem[]>(initialFeed.films);
   const [loading, setLoading] = useState(false);
   const [hasMore, setHasMore] = useState(initialFeed.hasMore);
@@ -38,7 +44,9 @@ const FeedSection: React.FC<FeedSectionProps> = ({ initialFeed, token }) => {
     loadingRef.current = true;
     setLoading(true);
     try {
-      const res = await fetch(`/api/feed?page=${pageRef.current}&pageSize=40`);
+      const res = await fetch(`/api/feed?page=${pageRef.current}&pageSize=40`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
       const data = await res.json();
 
       if (!data.films || data.films.length === 0) {
@@ -85,6 +93,8 @@ const FeedSection: React.FC<FeedSectionProps> = ({ initialFeed, token }) => {
                   genre_ids={item.genre_ids}
                   release_year={item.release_year}
                   photo_url={item.photo_url}
+                  token={token}
+                  lists={lists}
                 />
               </div>
             </RatingDialog>
