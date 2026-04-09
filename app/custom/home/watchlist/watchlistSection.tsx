@@ -12,7 +12,7 @@ type FeedItem = {
   title: string;
   genre_ids: number[];
   release_year: number;
-  photo_url: string;
+  poster_url: string;
 };
 
 type ListItem = {
