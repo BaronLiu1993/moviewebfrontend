@@ -1,79 +1,15 @@
-"use client";
+import { cookies } from "next/headers";
+import { redirect } from "next/navigation";
+import InviteClient from "./inviteClient";
 
-import { useEffect, useState } from "react";
-import { useParams, useRouter } from "next/navigation";
+export default async function InvitePage({ params }: { params: Promise<{ code: string }> }) {
+  const { code } = await params;
+  const cookieStore = await cookies();
+  const token = cookieStore.get("token")?.value;
 
-export default function InvitePage() {
-  const { code } = useParams<{ code: string }>();
-  const router = useRouter();
-  const [status, setStatus] = useState<"loading" | "success" | "error">("loading");
-  const [message, setMessage] = useState("");
+  if (!token) {
+    redirect(`/login?redirect=/invite/${code}`);
+  }
 
-  useEffect(() => {
-    // TODO: replace with real token from cookies/auth
-    const token = document.cookie
-      .split("; ")
-      .find((row) => row.startsWith("token="))
-      ?.split("=")[1];
-
-    if (!token) {
-      router.push(`/login?redirect=/invite/${code}`);
-      return;
-    }
-
-    fetch("/api/friend/redeem-invite", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
-      },
-      body: JSON.stringify({ code }),
-    })
-      .then(async (res) => {
-        const data = await res.json();
-        if (!res.ok) {
-          setStatus("error");
-          setMessage(data.message || "Failed to redeem invite");
-        } else {
-          setStatus("success");
-          setMessage(`You're now friends with ${data.data?.inviterName || "them"}!`);
-        }
-      })
-      .catch(() => {
-        setStatus("error");
-        setMessage("Something went wrong. Please try again.");
-      });
-  }, [code, router]);
-
-  return (
-    <div className="flex items-center justify-center min-h-screen font-figtree">
-      <div className="text-center space-y-4">
-        {status === "loading" && (
-          <p className="text-lg text-muted-foreground">Accepting invite...</p>
-        )}
-        {status === "success" && (
-          <>
-            <p className="text-2xl font-bold">{message}</p>
-            <button
-              onClick={() => router.push("/home")}
-              className="text-sm underline underline-offset-4 text-muted-foreground hover:text-foreground"
-            >
-              Go to Home
-            </button>
-          </>
-        )}
-        {status === "error" && (
-          <>
-            <p className="text-lg text-red-500">{message}</p>
-            <button
-              onClick={() => router.push("/home")}
-              className="text-sm underline underline-offset-4 text-muted-foreground hover:text-foreground"
-            >
-              Go to Home
-            </button>
-          </>
-        )}
-      </div>
-    </div>
-  );
+  return <InviteClient code={code} token={token} />;
 }
