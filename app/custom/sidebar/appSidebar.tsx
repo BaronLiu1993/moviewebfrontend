@@ -8,8 +8,8 @@ import {
   PlusSquare,
   Clapperboard,
   Handshake,
-  Hammer,
-  FilmIcon,
+  Camera,
+  X,
 } from "lucide-react";
 import {
   Sidebar,
@@ -53,6 +53,9 @@ const AppSidebar = () => {
   const [boardDialogOpen, setBoardDialogOpen] = useState(false);
   const [friendsDialogOpen, setFriendsDialogOpen] = useState(false);
   const [boardName, setBoardName] = useState("");
+  const [boardImage, setBoardImage] = useState<File | null>(null);
+  const [boardImagePreview, setBoardImagePreview] = useState<string | null>(null);
+  const boardFileRef = useRef<HTMLInputElement>(null);
   const [inviteUrl, setInviteUrl] = useState("");
   const [inviteLoading, setInviteLoading] = useState(false);
   const panelRef = useRef<HTMLDivElement>(null);
@@ -171,26 +174,80 @@ const AppSidebar = () => {
             <DialogTitle>Create New Board</DialogTitle>
           </DialogHeader>
           <div className="flex flex-col gap-4">
+            <input
+              ref={boardFileRef}
+              type="file"
+              accept="image/*"
+              className="hidden"
+              onChange={(e) => {
+                const file = e.target.files?.[0];
+                if (!file) return;
+                setBoardImage(file);
+                setBoardImagePreview(URL.createObjectURL(file));
+              }}
+            />
+            {boardImagePreview ? (
+              <div className="relative w-fit">
+                <img src={boardImagePreview} alt="Preview" className="rounded-md max-h-40 object-cover" />
+                <button
+                  type="button"
+                  onClick={() => {
+                    setBoardImage(null);
+                    setBoardImagePreview(null);
+                    if (boardFileRef.current) boardFileRef.current.value = "";
+                  }}
+                  className="absolute -top-2 -right-2 bg-background border rounded-full p-0.5 cursor-pointer hover:bg-zinc-100"
+                >
+                  <X size={14} />
+                </button>
+              </div>
+            ) : (
+              <button
+                type="button"
+                onClick={() => boardFileRef.current?.click()}
+                className="flex items-center border-2 gap-4 border-dashed w-full rounded-md p-2 text-sm text-muted-foreground hover:text-foreground transition cursor-pointer"
+              >
+                <Camera size={18} className="stroke-[0.5px] h-10 w-10 text-green-800" />
+                <div className="flex flex-col gap-1 font-figtree text-left">
+                  <h1 className="font-semibold">Add cover photo</h1>
+                  <p className="font-light text-sm text-muted-foreground">Give your board a cover image</p>
+                </div>
+              </button>
+            )}
             <Input
               placeholder="Board name"
               value={boardName}
               onChange={(e) => setBoardName(e.target.value)}
             />
-            <Button disabled={!boardName.trim()} onClick={async () => {
+            <Button className = "w-fit" disabled={!boardName.trim()} onClick={async () => {
               if (!boardName.trim()) return;
               try {
-                await fetch("/api/list", {
+                const res = await fetch("/api/list", {
                   method: "POST",
                   headers: {
                     "Content-Type": "application/json",
                     Authorization: `Bearer ${token}`,
                   },
-                  body: JSON.stringify({ name: boardName.trim() }),
+                  body: JSON.stringify({ name: boardName.trim(), hasImage: !!boardImage }),
                 });
+                const json = await res.json();
+                const data = json.data;
+
+                if (data?.uploadUrl && boardImage) {
+                  await fetch(data.uploadUrl, {
+                    method: "PUT",
+                    headers: { "Content-Type": boardImage.type },
+                    body: boardImage,
+                  });
+                }
+
                 setBoardName("");
+                setBoardImage(null);
+                setBoardImagePreview(null);
+                if (boardFileRef.current) boardFileRef.current.value = "";
                 setBoardDialogOpen(false);
               } catch (err) {
-                console.error("Failed to create board:", err);
+                console.error("[createBoard] error:", err);
               }
             }}>Create</Button>
           </div>

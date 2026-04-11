@@ -9,7 +9,7 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { Textarea } from "@/components/ui/textarea";
-import { ImagePlus, Star, X } from "lucide-react";
+import { Camera, Star, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 interface RatingDialogProps {
@@ -21,7 +21,14 @@ interface RatingDialogProps {
   children: React.ReactNode;
 }
 
-const RatingDialog = ({ title, tmdb_id, genre_ids, release_year, children, token }: RatingDialogProps) => {
+const RatingDialog = ({
+  title,
+  tmdb_id,
+  genre_ids,
+  release_year,
+  children,
+  token,
+}: RatingDialogProps) => {
   const [rating, setRating] = useState(0);
   const [hoveredStar, setHoveredStar] = useState(0);
   const displayRating = hoveredStar || rating;
@@ -49,7 +56,7 @@ const RatingDialog = ({ title, tmdb_id, genre_ids, release_year, children, token
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          "Authorization": `Bearer ${token}`,
+          Authorization: `Bearer ${token}`,
         },
         body: JSON.stringify({
           tmdbId: tmdb_id,
@@ -91,6 +98,34 @@ const RatingDialog = ({ title, tmdb_id, genre_ids, release_year, children, token
         <DialogHeader>
           <DialogTitle>{title}</DialogTitle>
         </DialogHeader>
+        {imagePreview ? (
+          <div className="relative w-fit">
+            <img
+              src={imagePreview}
+              alt="Preview"
+              className="rounded-md max-h-40 object-cover"
+            />
+            <button
+              type="button"
+              onClick={handleRemoveImage}
+              className="absolute -top-2 -right-2 bg-background border rounded-full p-0.5 cursor-pointer hover:bg-zinc-100"
+            >
+              <X size={14} />
+            </button>
+          </div>
+        ) : (
+          <button
+            type="button"
+            onClick={() => fileInputRef.current?.click()}
+            className="flex items-center border-2 gap-4 border-dashed w-full rounded-md p-2 text-sm text-muted-foreground hover:text-foreground transition cursor-pointer"
+          >
+            <Camera size={18} className="stroke-[0.5px] h-10 w-10 text-green-800" />
+            <div className = "flex flex-col gap-1 font-figtree justify-left items-left text-left">
+              <h1 className = "font-semibold">Add photo</h1>
+              <p className="font-light text-sm text-muted-foreground">Share Your Favourite Scene!</p>
+            </div>
+          </button>
+        )}
         <div className="flex items-center justify-left gap-1">
           {[1, 2, 3, 4, 5].map((star) => (
             <button
@@ -134,30 +169,9 @@ const RatingDialog = ({ title, tmdb_id, genre_ids, release_year, children, token
             className="hidden"
             onChange={handleImageSelect}
           />
-          {imagePreview ? (
-            <div className="relative w-fit">
-              <img src={imagePreview} alt="Preview" className="rounded-md max-h-40 object-cover" />
-              <button
-                type="button"
-                onClick={handleRemoveImage}
-                className="absolute -top-2 -right-2 bg-background border rounded-full p-0.5 cursor-pointer hover:bg-zinc-100"
-              >
-                <X size={14} />
-              </button>
-            </div>
-          ) : (
-            <button
-              type="button"
-              onClick={() => fileInputRef.current?.click()}
-              className="flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition cursor-pointer"
-            >
-              <ImagePlus size={18} />
-              Add photo
-            </button>
-          )}
         </div>
         <Button className="w-fit cursor-pointer" onClick={handleSubmitRating}>
-          Submit Review
+          Create Post
         </Button>
       </DialogContent>
     </Dialog>
