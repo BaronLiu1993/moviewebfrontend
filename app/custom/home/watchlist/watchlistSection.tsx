@@ -25,6 +25,8 @@ interface WatchlistSectionProps {
   listId: string;
   token: string;
   lists: ListItem[];
+  createdAt: string;
+  imageUrl?: string;
 }
 
 const WatchlistSection: React.FC<WatchlistSectionProps> = ({
@@ -32,10 +34,12 @@ const WatchlistSection: React.FC<WatchlistSectionProps> = ({
   listId,
   token,
   lists,
+  createdAt,
+  imageUrl,
 }) => {
   const [items, setItems] = useState<FeedItem[]>([]);
   const [loading, setLoading] = useState(true);
-  
+
   useEffect(() => {
     setLoading(true);
     fetch(`/api/list/${listId}`, {
@@ -54,37 +58,54 @@ const WatchlistSection: React.FC<WatchlistSectionProps> = ({
   };
 
   return (
-    <div className="flex flex-col w-full">
-      <div className="relative w-full h-[200px] bg-gradient-to-r from-zinc-200 to-zinc-300 dark:from-zinc-800 dark:to-zinc-700">
-        <div className="absolute top-4 right-4 flex items-center bg-white rounded-lg shadow-sm">
-          <button className="px-4 py-2 text-sm text-zinc-500 hover:text-zinc-800 transition cursor-pointer items-center gap-1 flex hover:bg-zinc-100 rounded-md">
-            <Send className = "w-4 h-4" />
+    <div className="flex font-figtree flex-col w-full">
+      <div className="px-20 pt-8">
+        <div className="flex items-end gap-6">
+          {imageUrl ? (
+            <img src={imageUrl} alt={name} className="w-48 h-48 rounded-lg object-cover flex-shrink-0" />
+          ) : (
+            <div className="w-48 h-48 rounded-lg bg-zinc-200 dark:bg-zinc-700 flex-shrink-0" />
+          )}
+          <div>
+            <p className="text-md text-muted-foreground">Film Board</p>
+            <h1 className="text-6xl font-bold">{name}</h1>
+            {loading ? (
+              <Skeleton className="h-5 w-24 mt-2" />
+            ) : (
+              <div className ="flex gap-2 items-center">
+                <p className="text-muted-foreground mt-1">
+                  {items.length} {items.length === 1 ? "title" : "titles"}
+                </p>
+                <span className="text-muted-foreground mt-1 text-4xl">·</span>
+                <p className="text-muted-foreground mt-1">
+                  {new Date(createdAt).toLocaleDateString("en-US", { month: "long", day: "numeric", year: "numeric" })}
+                </p>
+              </div>
+            )}
+          </div>
+        </div>
+        <div className = "flex gap-2   mt-6">
+          <button className="px-4 py-2 text-sm text-zinc-500 text-zinc-800 transition cursor-pointer items-center gap-1 flex bg-zinc-100 rounded-md">
+            <Send className="w-4 h-4 text-blue-700" />
             Share
           </button>
           <Separator orientation="vertical" className="h-5" />
-          <button className="px-4 py-2 text-sm text-zinc-500 hover:text-zinc-800 transition cursor-pointer flex items-center gap-1 hover:bg-zinc-100 rounded-md">
-            <Link className = "w-4 h-4" />
-            Collaborate
+          <button className="px-4 py-2 text-sm text-zinc-500 text-zinc-800 transition cursor-pointer flex items-center gap-1 bg-zinc-100 rounded-md">
+            <Link className="w-4 h-4 text-pink-700" />
+            Invite Friends to Collaborate
           </button>
         </div>
       </div>
-      <div className="px-20 mt-10">
-        <h1 className="text-4xl font-bold">{name}</h1>
-        {loading ? (
-          <Skeleton className="h-5 w-24 mt-2" />
-        ) : (
-          <p className="text-muted-foreground mt-2">
-            {items.length} {items.length === 1 ? "title" : "titles"}
-          </p>
-        )}
-      </div>
+      <Separator className="mt-8 w-full" />
       <div
-        className="flex flex-wrap gap-4 justify-center mx-auto mt-8"
-        style={{ maxWidth: "fit-content" }}
+        className="flex flex-wrap gap-4 px-20 mt-8"
       >
         {loading
           ? Array.from({ length: 8 }).map((_, i) => (
-              <div key={`skeleton-${i}`} className="flex flex-col rounded-xl overflow-hidden w-[250px]">
+              <div
+                key={`skeleton-${i}`}
+                className="flex flex-col rounded-xl overflow-hidden w-[250px]"
+              >
                 <Skeleton className="rounded-lg w-[250px] h-[375px]" />
                 <div className="p-3 space-y-2">
                   <Skeleton className="h-5 w-3/4" />

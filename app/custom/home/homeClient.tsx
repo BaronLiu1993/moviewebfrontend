@@ -31,6 +31,7 @@ type ListItem = {
   name: string;
   is_default: boolean;
   created_at: string;
+  image_url?: string;
 };
 
 type User = {
@@ -66,7 +67,7 @@ function HomeInner({ feed, list, token, user }: HomeClientProps) {
     <>
     <AppSidebar />
     <SidebarInset
-      className="transition-[margin] duration-500 ease-in-out font-figtree"
+      className="transition-[margin] duration-500 ease-in-out font-figtree min-w-0 overflow-hidden"
       style={{ marginLeft: open ? "calc(20rem + var(--sidebar-width))" : "var(--sidebar-width)" }}
     >
       <SearchBar onSearch={handleSearch} />
@@ -100,6 +101,8 @@ function HomeInner({ feed, list, token, user }: HomeClientProps) {
           listId={activeTab}
           token={token}
           lists={list}
+          createdAt={list.find((l) => l.list_id === activeTab)?.created_at ?? ""}
+          imageUrl={list.find((l) => l.list_id === activeTab)?.image_url}
         />
       )}
     </SidebarInset>
