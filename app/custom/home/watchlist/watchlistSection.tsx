@@ -6,6 +6,7 @@ import RatingDialog from "../rating/ratingDialog";
 import { Separator } from "@/components/ui/separator";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Link, Send } from "lucide-react";
+import EditListDialog from "./components/editListDialog";
 
 type FeedItem = {
   tmdb_id: number;
@@ -84,16 +85,13 @@ const WatchlistSection: React.FC<WatchlistSectionProps> = ({
             )}
           </div>
         </div>
-        <div className = "flex gap-2   mt-6">
-          <button className="px-4 py-2 text-sm text-zinc-500 text-zinc-800 transition cursor-pointer items-center gap-1 flex bg-zinc-100 rounded-md">
-            <Send className="w-4 h-4 text-blue-700" />
-            Share
-          </button>
+        <div className = "flex gap-2 mt-6">
           <Separator orientation="vertical" className="h-5" />
-          <button className="px-4 py-2 text-sm text-zinc-500 text-zinc-800 transition cursor-pointer flex items-center gap-1 bg-zinc-100 rounded-md">
-            <Link className="w-4 h-4 text-pink-700" />
-            Invite Friends to Collaborate
+          <button className="group px-4 py-2 text-sm text-zinc-500 transition cursor-pointer flex items-center gap-1 rounded-md border-2 hover:border-pink-700 hover:text-white hover:bg-pink-700">
+            <Link className="w-4 h-4 text-pink-700 group-hover:text-white transition" />
+            Invite Collaborators
           </button>
+          <EditListDialog name={name} listId={listId} token={token} />   
         </div>
       </div>
       <Separator className="mt-8 w-full" />
