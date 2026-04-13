@@ -10,6 +10,7 @@ import {
   Handshake,
   Camera,
   X,
+  Image,
 } from "lucide-react";
 import {
   Sidebar,
@@ -33,18 +34,23 @@ import { useCreatePanel } from "./createPanelContext";
 const navItems = [
   {
     title: "Home",
-    icon: <Home className="!size-8 stroke-[1.5px]" />,
+    icon: <Home className="!size-6 stroke-[1.5px]" />,
     href: "/home",
   },
   {
     title: "Trending",
-    icon: <LayoutDashboard className="!size-8 stroke-[1.5px]" />,
+    icon: <LayoutDashboard className="!size-6 stroke-[1.5px]" />,
     href: "/trending",
   },
   {
     title: "Settings",
-    icon: <Settings className="!size-8 stroke-[1.5px]" />,
-    href: "/settings",
+    icon: <Settings className="!size-6 stroke-[1.5px]" />,
+    href: "/profiles",
+  },
+  {
+    title: "My Posts",
+    icon: <Image className="!size-6 stroke-[1.5px]" />,
+    href: "/profile",
   },
 ];
 
@@ -88,7 +94,7 @@ const AppSidebar = () => {
                 {navItems.map((item) => (
                   <SidebarMenuItem key={item.title} className="py-5">
                     <SidebarMenuButton asChild>
-                      <a className="h-10 w-10" href={item.href}>
+                      <a className="h-10 w-10" href={item.href} onClick={() => setCreateOpen(false)}>
                         {item.icon}
                       </a>
                     </SidebarMenuButton>
@@ -99,7 +105,7 @@ const AppSidebar = () => {
                     ref={toggleRef}
                     onClick={() => setCreateOpen(!createOpen)}
                   >
-                    <PlusSquare className="!size-8 stroke-[1.5px]" />
+                    <PlusSquare className="!size-6 stroke-[1.5px]" />
                   </SidebarMenuButton>
                 </SidebarMenuItem>
               </SidebarMenu>
